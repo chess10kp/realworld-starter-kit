@@ -1,0 +1,8 @@
+.jac/
+.codebase-wiki/
+.git/
+__pycache__/
+*.pyc
+node_modules/
+research.md
+AGENTS.md

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: realworld-jac
+    runtime: docker
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: JAC_PORT
+        value: 8000

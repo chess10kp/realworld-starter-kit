@@ -2,7 +2,13 @@
 
 # RealWorld (Conduit) — Jac/Jaseci Backend
 
-A fully functional [RealWorld](https://github.com/gothinkster/realworld) Conduit backend API implementation built with [Jac / Jaseci](https://jaseci.org).
+[![CI](https://github.com/chess10kp/realworld-starter-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/chess10kp/realworld-starter-kit/actions/workflows/ci.yml)
+
+> **Jac/Jaseci codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.**
+
+### 🎯 Live Demo: `https://realworld-jac.onrender.com/api`
+
+This codebase was created to be implemented as a RealWorld backend using the [Jac](https://jaseci.org) graph-oriented programming language.
 
 ## Stack
 
