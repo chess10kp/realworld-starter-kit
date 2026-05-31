@@ -183,7 +183,7 @@ test "create article" {
     assert "article" in result;
     assert result["article"]["title"] == "My First Article";
     assert result["article"]["slug"] == "my-first-article";
-    assert len(result["article"]["tag_list"]) == 2;
+    assert len(result["article"]["tagList"]) == 2;
 }
 
 test "get article by slug" {
@@ -220,13 +220,13 @@ test "list articles with pagination" {
     tok = _token(reg);
     # Count before
     before = article_list(token=tok);
-    count_before = before["articles_count"];
+    count_before = before["articlesCount"];
     for i in range(5) {
         article_create(token=tok, title=f"Rita Article {i}", description="d", body="b");
     }
     result = article_list(token=tok, limit=2, offset=0);
     assert len(result["articles"]) == 2;
-    assert result["articles_count"] == count_before + 5;
+    assert result["articlesCount"] == count_before + 5;
 }
 
 test "list articles filter by tag" {
@@ -235,7 +235,7 @@ test "list articles filter by tag" {
     article_create(token=tok, title="Tagged", description="d", body="b", tag_list=["special"]);
     article_create(token=tok, title="Untagged", description="d", body="b");
     result = article_list(token=tok, tag="special");
-    assert result["articles_count"] == 1;
+    assert result["articlesCount"] == 1;
     assert result["articles"][0]["title"] == "Tagged";
 }
 
@@ -245,7 +245,7 @@ test "list articles filter by author" {
     tok2 = _token(reg2);
     article_create(token=tok2, title="Uma Article", description="d", body="b");
     result = article_list(token="", author="uma");
-    assert result["articles_count"] == 1;
+    assert result["articlesCount"] == 1;
 }
 
 
@@ -265,7 +265,7 @@ test "favorite and unfavorite article" {
     # Vera favorites it
     result = article_favorite(token=tok1, slug="fav-me");
     assert result["article"]["favorited"] == True;
-    assert result["article"]["favorites_count"] >= 1;
+    assert result["article"]["favoritesCount"] >= 1;
 
     # Unfavorite
     result = article_unfavorite(token=tok1, slug="fav-me");
@@ -340,7 +340,7 @@ test "feed shows followed users articles" {
 
     # Check feed
     result = article_feed(token=tok1);
-    assert result["articles_count"] >= 1;
+    assert result["articlesCount"] >= 1;
     titles = [a["title"] for a in result["articles"]];
     assert "Feed Article" in titles;
 }

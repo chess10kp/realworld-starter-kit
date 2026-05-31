@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Jac
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/jaseci-labs/jaseci/main/scripts/install.sh | bash
+      - name: Install project deps
+        run: jac install
+      - name: Type check
+        run: jac check main.jac
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Jac
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/jaseci-labs/jaseci/main/scripts/install.sh | bash
+      - name: Install project deps
+        run: jac install
+      - name: Run Jac unit tests
+        run: jac test -d tests
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Jac
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/jaseci-labs/jaseci/main/scripts/install.sh | bash
+      - name: Install project deps
+        run: jac install
+      - name: Start Jac server
+        run: |
+          jac start main.jac --dev --no_client --port 8000 &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8000/ > /dev/null 2>&1; then echo "Ready"; break; fi
+            sleep 1
+          done
+          sleep 3
+      - name: Start adapter
+        run: |
+          python3 adapter.py 3000 &
+          sleep 2
+      - name: Run integration tests
+        run: python3 tests/test_integration.py

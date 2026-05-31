@@ -34,6 +34,7 @@ node Article {
     has body: str = "";
     has created_at: str = "";
     has updated_at: str = "";
+    has favorites_count: int = 0;
 }
 
 node Comment {
@@ -139,13 +140,7 @@ def _is_favorited(user: User, article: Article) -> bool {
 }
 
 def _favorites_count(article: Article) -> int {
-    count = 0;
-    for u in [root-->][?:User] {
-        if _is_favorited(u, article) {
-            count += 1;
-        }
-    }
-    return count;
+    return article.favorites_count;
 }
 
 def _sort_articles_desc(articles: list[Article]) -> list[Article] {
@@ -168,7 +163,7 @@ def _sort_comments_asc(comments: list[dict]) -> list[dict] {
     result: list[dict] = list(comments);
     for i in range(n) {
         for j in range(0, n - i - 1) {
-            if result[j]["created_at"] > result[j + 1]["created_at"] {
+            if result[j]["createdAt"] > result[j + 1]["createdAt"] {
                 tmp = result[j];
                 result[j] = result[j + 1];
                 result[j + 1] = tmp;
@@ -221,12 +216,12 @@ def _article_json(article: Article, current_user: (User | None) = None) -> dict[
             "title": article.title,
             "description": article.description,
             "body": article.body,
-            "created_at": article.created_at,
-            "updated_at": article.updated_at,
+            "createdAt": article.created_at,
+            "updatedAt": article.updated_at,
             "favorited": favorited,
-            "favorites_count": fav_count,
+            "favoritesCount": fav_count,
             "author": _profile_json(author, current_user)["profile"] if author is not None else {},
-            "tag_list": tag_names
+            "tagList": tag_names
         }
     };
 }
@@ -237,8 +232,8 @@ def _comment_json(comment: Comment, current_user: (User | None) = None) -> dict[
     return {
         "comment": {
             "id": str(jid(comment)),
-            "created_at": comment.created_at,
-            "updated_at": comment.updated_at,
+            "createdAt": comment.created_at,
+            "updatedAt": comment.updated_at,
             "body": comment.body,
             "author": _profile_json(author, current_user)["profile"] if author is not None else {}
         }
@@ -490,7 +485,7 @@ def:pub article_list(
     if favorited {
         fav_user = _find_user_by_username(favorited);
         if fav_user is None {
-            return {"articles": [], "articles_count": 0};
+            return {"articles": [], "articlesCount": 0};
         }
         filtered3: list[Article] = [];
         for a in all_articles {
@@ -515,7 +510,7 @@ def:pub article_list(
 
     return {
         "articles": articles_json,
-        "articles_count": total
+        "articlesCount": total
     };
 }
 
@@ -548,7 +543,7 @@ def:pub article_feed(token: str, limit: int = 20, offset: int = 0) -> dict[str, 
 
     return {
         "articles": articles_json,
-        "articles_count": total
+        "articlesCount": total
     };
 }
 
@@ -717,6 +712,7 @@ def:pub article_favorite(token: str, slug: str) -> dict[str, any] {
 
     if not _is_favorited(current_user, article) {
         current_user +>: Favorited() :+> article;
+        article.favorites_count = article.favorites_count + 1;
     }
 
     return _article_json(article, current_user);
@@ -736,6 +732,9 @@ def:pub article_unfavorite(token: str, slug: str) -> dict[str, any] {
     edges = [edge current_user->:Favorited:->article];
     for e in edges {
         del e;
+    }
+    if len(edges) > 0 {
+        article.favorites_count = article.favorites_count - 1;
     }
 
     return _article_json(article, current_user);
