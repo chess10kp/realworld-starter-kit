@@ -1,0 +1,15 @@
+[project]
+name = "realworld-jac"
+version = "0.1.0"
+description = "RealWorld Conduit backend scaffold built with Jac/Jaseci"
+entry-point = "main.jac"
+
+[dependencies]
+
+[dev-dependencies]
+watchdog = ">=3.0.0"
+
+[scripts]
+check = "jac check main.jac"
+test = "jac test -d tests"
+start = "jac start main.jac --dev --no_client"

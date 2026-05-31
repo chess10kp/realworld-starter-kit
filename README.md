@@ -1,23 +1,59 @@
 # ![RealWorld Example App](logo.png)
 
-> ### [YOUR_FRAMEWORK] codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
+# RealWorld (Conduit) - Jac/Jaseci Backend (WIP)
 
+This repository is a **Jac/Jaseci implementation scaffold** for the [RealWorld](https://github.com/gothinkster/realworld) Conduit spec.
 
-### [Demo](https://demo.realworld.build/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
+Current status: **project skeleton + endpoint stubs** (not feature-complete yet).
 
+## Stack
 
-This codebase was created to demonstrate a fully fledged fullstack application built with **[YOUR_FRAMEWORK]** including CRUD operations, authentication, routing, pagination, and more.
+- [Jac / Jaseci](https://jaseci.org)
+- `jac start` local API server
+- Graph persistence (default SQLite via Jac runtime)
 
-We've gone to great lengths to adhere to the **[YOUR_FRAMEWORK]** community styleguides & best practices.
+## Quick start
 
-For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
+```bash
+# 1) Install Jac (if needed)
+curl -fsSL https://raw.githubusercontent.com/jaseci-labs/jaseci/main/scripts/install.sh | bash
 
+# 2) Install project deps
+jac install
 
-# How it works
+# 3) Type check scaffold
+jac check main.jac
 
-> Describe the general architecture of your app here
+# 4) Start local API server
+jac start main.jac --dev --no_client
+```
 
-# Getting started
+Server defaults to `http://localhost:8000`.
 
-> npm install, npm start, etc.
+## Project structure
 
+- `main.jac` - RealWorld domain model + endpoint stubs
+- `docs/REALWORLD_IMPLEMENTATION_CHECKLIST.md` - build checklist
+- `docs/REALWORLD_ENDPOINT_MAPPING.md` - Conduit API mapping plan
+- `tests/` - test suite (to be implemented)
+
+## What's implemented now
+
+- ✅ Full Jac project setup (`jac.toml`, `main.jac`)
+- ✅ Data model: `User`, `Article`, `Comment`, `Tag` nodes with `Authored`, `HasComment`, `HasTag`, `Favorited`, `Follows` edges
+- ✅ Auth: register, login, get/update current user (application-level tokens)
+- ✅ Profiles: get profile, follow, unfollow
+- ✅ Articles: create, get, update, delete, list (with tag/author/favorited filters + pagination), feed
+- ✅ Favorites: favorite/unfavorite articles
+- ✅ Comments: list, create, delete
+- ✅ Tags: list
+- ✅ Health endpoint
+- ✅ 28 passing Jac unit tests covering all feature areas
+
+## Route adapter needed
+
+Jac serves endpoints at `/function/<name>` (POST, JSON body). RealWorld expects `/api/*` routes.
+A thin adapter is needed for full RealWorld compliance:
+- Map routes: `/api/users` → `/function/user_register`
+- Unwrap bodies: `{"user":{...}}` → `{...}`
+- Extract from envelope: `{"result":{...}}` → `{...}`
